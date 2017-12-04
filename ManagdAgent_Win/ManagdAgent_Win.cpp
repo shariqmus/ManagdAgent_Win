@@ -20,7 +20,7 @@ int worker()
 	timer.start();
 
 	// My Initializations
-	FILELog::ReportingLevel() = logDEBUG3;
+	FILELog::ReportingLevel() = logDEBUG3; 
 	FILE* log_fd = fopen("agent.log", "a+");
 	Output2FILE::Stream() = log_fd;
 
