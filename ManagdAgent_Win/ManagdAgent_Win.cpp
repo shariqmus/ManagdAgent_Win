@@ -10,7 +10,8 @@
 
 int worker()
 {
-	std::cout << "Starting process run...";
+	std::cout << "Starting process run..." << std::endl;
+	std::cout << "-----------------------------------------------------------------------------" << std::endl;
 
 	// Instantiate cxxtimer::Timer object
 	cxxtimer::Timer timer;
@@ -86,18 +87,16 @@ int worker()
 	Utility::ReplaceStringInPlace(data, "\n", "");
 	Utility::ReplaceStringInPlace(data, "\t", "");
 
-	// Post json
-	string url = Utility::GetConfigValue("agent", "endpoint");
-	FILE_LOG(logINFO) << "Sending json: " << data;
-	//	Utility::PostData(url, data);
-
 	// Print on screen
 	string s = jsonRoot.json().c_str();
 	Utility::ReplaceStringInPlace(s, "\n", "\r\n");
 	Utility::ReplaceStringInPlace(s, "\t", "  ");
 	cout << s;
 
-	//system("pause");
+	// Post json
+	string url = Utility::GetConfigValue("agent", "endpoint");
+	FILE_LOG(logINFO) << "Sending json: " << data;
+	Utility::PostData(url, data);
 
 	// Stop/pause the timer
 	timer.stop();
