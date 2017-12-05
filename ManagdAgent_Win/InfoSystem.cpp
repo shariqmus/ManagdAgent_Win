@@ -193,12 +193,24 @@ wstring InfoSystem::QueryLastWindowsUpdateDate()
 
 wstring InfoSystem::QueryAntiVirusStatus()
 {
-	wstring lastWindowsUpdateDate = L"";
+	wstring antiVirusStatus = L"";
 	
 	// This PS Script should be smart enough to tell us the status of antivirus on this host
 	wstring scriptOutput = PowerShellProcess::ExecPowerShellScript(L"psQueryAntiVirusStatus.ps1");
-	
-	return scriptOutput;
+	wistringstream iss(scriptOutput);
+
+	for (wstring line; std::getline(iss, line); )
+	{
+		vector<wstring> v = Utility::explode(line, ';');
+
+		for (std::vector<wstring>::iterator it = v.begin(); it != v.end(); ++it)
+		{
+			antiVirusStatus = *it;
+			break; // only interested in first record
+		}
+	}
+
+	return antiVirusStatus;
 }
 
 string InfoSystem::GetCurrentDateTime()
@@ -282,10 +294,12 @@ vector<CertExpiryInfo> InfoSystem::ScanCertExpiry()
 	}
 
 	/* TEST */
+	/*
 	CertExpiryInfo expInfo2;
 	expInfo2.certName = "test cert";
 	expInfo2.certExpiryDays = 99;
 	certExpiryInfo.push_back(expInfo2);
+	*/
 	/* TEST */
 
 	CertFreeCertificateContext(pCertContext);
