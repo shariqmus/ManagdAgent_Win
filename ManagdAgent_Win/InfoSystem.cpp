@@ -43,7 +43,7 @@ bool InfoSystem::RebootRequired()
 }
 
 
-bool InfoSystem::WindowsUpdateEnabled()
+bool InfoSystem::AutoUpdateEnabled()
 {
 	bool bRet = false;
 
@@ -122,7 +122,8 @@ double InfoSystem::GetCpuUsage()
 	*/
 }
 
-int InfoSystem::GetRamUsage(){
+double InfoSystem::GetRamUsage()
+{
 
 	MEMORYSTATUSEX statex;
 
@@ -171,10 +172,10 @@ wstring InfoSystem::QueryLocalHostname()
 	return (hostName);
 }
 
-wstring InfoSystem::QueryLastWindowsUpdateDate()
+wstring InfoSystem::QueryLastSystemUpdateDateTime()
 {
 	wstring lastWindowsUpdateDate = L"";
-	wstring scriptOutput = PowerShellProcess::ExecPowerShellScript(L"psQueryWindowsUpdates.ps1");
+	wstring scriptOutput = PowerShellProcess::ExecPowerShellScript(L"QuerySystemUpdates.ps1");
 	wistringstream iss(scriptOutput);
 
 	for (wstring line; std::getline(iss, line); )
@@ -196,7 +197,7 @@ wstring InfoSystem::QueryAntiVirusStatus()
 	wstring antiVirusStatus = L"";
 	
 	// This PS Script should be smart enough to tell us the status of antivirus on this host
-	wstring scriptOutput = PowerShellProcess::ExecPowerShellScript(L"psQueryAntiVirusStatus.ps1");
+	wstring scriptOutput = PowerShellProcess::ExecPowerShellScript(L"QueryAntiVirusStatus.ps1");
 	wistringstream iss(scriptOutput);
 
 	for (wstring line; std::getline(iss, line); )
@@ -306,4 +307,54 @@ vector<CertExpiryInfo> InfoSystem::ScanCertExpiry()
 	CertCloseStore(hSysStore, 0);
 
 	return certExpiryInfo;
+}
+
+string InfoSystem::GetOSArchName()
+{
+	OSVERSIONINFO vi;
+	vi.dwOSVersionInfoSize = sizeof(vi);
+	
+	if (GetVersionEx(&vi) == 0)
+	{
+		//throw SystemException("Cannot get OS version information");
+		FILE_LOG(logERROR) << "Cannot get OS version information";
+	}
+
+	switch (vi.dwPlatformId)
+	{
+		case VER_PLATFORM_WIN32s:
+			return "Windows 3.x";
+		case VER_PLATFORM_WIN32_WINDOWS:
+			return vi.dwMinorVersion == 0 ? "Windows 95" : "Windows 98";
+		case VER_PLATFORM_WIN32_NT:
+			return "Windows NT";
+		default:
+			return "Unknown";
+	}
+
+	return "Unknown";
+}
+
+string InfoSystem::GetOSName()
+{
+	bool bRet = false;
+
+	const wstring testSubKey = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
+	
+	RegKey key;
+
+	try
+	{
+		key.Open(HKEY_LOCAL_MACHINE, testSubKey);
+
+		wstring sz = key.GetStringValue(L"ProductName");
+
+		key.Close();
+
+		return Utility::wstring2string(sz);
+	}
+	catch (RegException e)
+	{
+		return "";
+	}
 }

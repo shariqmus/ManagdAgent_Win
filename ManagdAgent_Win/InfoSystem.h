@@ -19,15 +19,17 @@ private:
 
 public:
 	static	bool			RebootRequired();		// Does this machine requires a reboot
-	static	bool			WindowsUpdateEnabled();	// Auto update enabled
+	static	bool			AutoUpdateEnabled();	// Auto update enabled
 	static	double			GetCpuUsage();
-	static	int				GetRamUsage();
+	static	double			GetRamUsage();
 	static	long double		GetDriveUsageFreeBytesAvailable();
 	static	long double		GetDriveUsageTotalNumberOfBytes();
 	static	wstring			QueryLocalHostname();
-	static  wstring			QueryLastWindowsUpdateDate();
+	static  wstring			QueryLastSystemUpdateDateTime();
 	static	wstring			QueryAntiVirusStatus();
 	static  string			GetCurrentDateTime();
+	static  string			GetOSArchName();
+	static	string			GetOSName();
 
 	static  vector<CertExpiryInfo> ScanCertExpiry();
 

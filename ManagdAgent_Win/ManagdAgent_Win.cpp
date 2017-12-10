@@ -7,6 +7,7 @@
 #include "InfoSystem.h"
 
 #define APP_CODE_VERSION "0.1.0"
+#define OS_NAME "Windows"
 
 int worker()
 {
@@ -28,6 +29,8 @@ int worker()
 	Object jsonRoot, jsonSystem, jsonAlert, jsonMetrics;
 
 	// System	
+	jsonSystem << "OS" << InfoSystem::GetOSArchName(); // Windows or Linux
+	jsonSystem << "OSDescription" << InfoSystem::GetOSName();  
 	jsonSystem << "Hostname" << Utility::wstring2string(InfoSystem::QueryLocalHostname());
 	jsonSystem << "SystemDateTime" << InfoSystem::GetCurrentDateTime();
 
@@ -52,8 +55,8 @@ int worker()
 
 	// Alert
 	jsonAlert << "RebootRequired" << InfoSystem::RebootRequired();
-	jsonAlert << "WindowsUpdateEnabled" << InfoSystem::WindowsUpdateEnabled();
-	jsonAlert << "LastWindowsUpdateDateTime" << Utility::wstring2string(InfoSystem::QueryLastWindowsUpdateDate());
+	jsonAlert << "AutoUpdateEnabled" << InfoSystem::AutoUpdateEnabled();
+	jsonAlert << "LastSystemUpdateDateTime" << Utility::wstring2string(InfoSystem::QueryLastSystemUpdateDateTime());
 	jsonAlert << "AntiVirusStatus" << Utility::wstring2string(InfoSystem::QueryAntiVirusStatus());
 
 	// Root
